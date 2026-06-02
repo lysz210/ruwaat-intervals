@@ -1,0 +1,24 @@
+capacnan:
+  buckets:
+    credentials: claviger
+    maps-activities: tabula-rogeriana-intervals-activities
+  streams:
+    maps:
+      name: tabula-rogeriana
+
+quarkus:
+  devservices:
+    enabled: false
+  messaging:
+    nats:
+      connection:
+        servers:
+          - "nats://localhost:4222"
+
+'%dev':
+  quarkus:
+    log:
+#      level: DEBUG
+      category:
+        "io.quarkus.rest.client.reactive":
+          level: DEBUG
