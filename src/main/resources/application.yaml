@@ -1,3 +1,7 @@
+intervals:
+  base-url: https://intervals.icu
+  client-id: ${INTERVALS_CLIENT_ID}
+
 capacnan:
   buckets:
     credentials: claviger
