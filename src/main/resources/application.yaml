@@ -13,6 +13,9 @@ capacnan:
 quarkus:
   devservices:
     enabled: false
+  rest-client:
+    intervals-v1:
+      url: ${intervals.base-url}
   messaging:
     nats:
       connection:
@@ -21,6 +24,11 @@ quarkus:
 
 '%dev':
   quarkus:
+    rest-client:
+      intervals-v1:
+        logging:
+          scope: all
+          body-limit: 10240
     log:
 #      level: DEBUG
       category:

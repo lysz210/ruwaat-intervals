@@ -1,4 +1,4 @@
-package it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential
+package it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model
 
 import java.time.Instant
 
@@ -10,5 +10,5 @@ data class Oauth2Flow(
     val tokenType: String,
     val scope: String,
 ) {
-    val expired: Boolean get() = expiresAt?.isBefore(Instant.now()) ?: true
+    val expired: Boolean get() = expiresAt?.isBefore(Instant.now()) ?: false
 }

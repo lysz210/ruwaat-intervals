@@ -1,9 +1,10 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Authorization
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Credential
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Key
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Oauth2Flow
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Authorization
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Credential
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Oauth2Flow
 import it.lysz210.akasha.capacnan.quipus.credentials.CredentialQuipu
 import it.lysz210.akasha.capacnan.quipus.credentials.Quipucamayoc
 import jakarta.enterprise.context.ApplicationScoped
@@ -34,7 +35,10 @@ class ClavigerQuipucamayoc(
                             },
                         scope = oauth2Flow.scope,
                     )
-                )
+                ),
+                athlete = oauth2Flow.takeIf { it.hasIntervalsAthlete() }?.intervalsAthlete?.let {
+                    Athlete(it.id, it.name)
+                }
             )
         }
         throw IllegalArgumentException("unsupported.")

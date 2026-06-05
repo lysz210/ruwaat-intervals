@@ -3,8 +3,9 @@ package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 import io.quarkiverse.reactive.messaging.nats.jetstream.client.store.KeyValueStoreAware
 import io.smallrye.mutiny.Uni
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.exception.CredentialNotFoundException
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Credential
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.credential.Key
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Credential
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanProperties
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.IntervalsProperties
 import it.lysz210.akasha.capacnan.quipus.credentials.CredentialQuipu
@@ -35,4 +36,7 @@ class ClavigerChasqui(
                 Uni.createFrom().item(oauth2.accessToken)
             }
         }
+
+    val intervalsAthlete: Uni<Athlete>
+        get() = this.intervals.map { it.athlete }
 }
