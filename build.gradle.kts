@@ -24,15 +24,17 @@ val quarkusPlatformVersion: String by project
 val jetstreamVersion: String by project
 val quipusMapsVersion: String by project
 val quipusCredentialsVersion: String by project
+val chapacnanBlueprintVerion: String by project
 
 dependencies {
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation("it.lysz210.akasha.capacnan:blueprint:${chapacnanBlueprintVerion}")
     implementation("it.lysz210.akasha.capacnan.quipus:maps:${quipusMapsVersion}")
     implementation("it.lysz210.akasha.capacnan.quipus:credentials:${quipusCredentialsVersion}")
     implementation("io.quarkus:quarkus-smallrye-health")
     implementation("io.quarkiverse.reactivemessaging.nats-jetstream:quarkus-messaging-nats-jetstream:${jetstreamVersion}")
     implementation("io.quarkus:quarkus-rest-client-jackson")
     implementation("io.quarkus:quarkus-config-yaml")
-    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

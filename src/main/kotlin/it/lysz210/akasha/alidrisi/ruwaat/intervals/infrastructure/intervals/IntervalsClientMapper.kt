@@ -12,6 +12,14 @@ class IntervalsClientMapper {
         Activity(
             id = response.id,
             externalId = response.externalId,
-            athlete = Athlete(response.icuAthleteId)
+            athlete = Athlete(response.icuAthleteId),
+            name = response.name,
+            distance = response.distance,
+            movingTime = response.movingTime,
+            elapsedTime = response.elapsedTime,
+            type = response.type,
+            startDate = response.startDate,
+            averageSpeed = response.averageSpeed,
+            maxSpeed = response.maxSpeed,
         )
 }

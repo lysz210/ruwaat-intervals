@@ -1,8 +1,9 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.intervals
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import icu.intervals.api.v1.IntervalsRestClient
 import icu.intervals.api.v1.dto.ActivitiesRequest
-import io.smallrye.common.annotation.Blocking
+import icu.intervals.api.v1.dto.ActivitiesResponse
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.infrastructure.Infrastructure
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
@@ -13,15 +14,26 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.time.LocalDate
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
+import java.util.zip.GZIPOutputStream
 
 @ApplicationScoped
 class IntervalsClientWrapper(
     private val clavigerChasqui: ClavigerChasqui,
     @param:RestClient private val intervalsRestClient: IntervalsRestClient,
     private val intervalsClientMapper: IntervalsClientMapper,
+    objectMapper: ObjectMapper,
 ) : ActivitiesPort {
+    private val fields: Set<String>
+    init {
+        val config = objectMapper.serializationConfig
+
+        val beanDesc = config.introspect(
+            objectMapper.constructType(ActivitiesResponse::class.java)
+        )
+        fields = beanDesc.findProperties().map {
+            prop -> prop.name
+        }.toSet()
+    }
     override fun listActivities(): Multi<Activity> =
         this.clavigerChasqui.intervalsAthlete.map { it.id }
             .onItem().transformToUni { athleteId ->
@@ -29,7 +41,7 @@ class IntervalsClientWrapper(
                     athleteId,
                     ActivitiesRequest(
                         LocalDate.of(2026, 1, 1),
-                        setOf("id", "external_id", "icu_athlete_id")
+                        this.fields
                     )
                 )
             }
@@ -41,12 +53,8 @@ class IntervalsClientWrapper(
             .map { inputStream ->
                 val zipFile = Files.createTempFile("activity_$activityId", ".zip")
                 inputStream.use { input ->
-                    ZipOutputStream(FileOutputStream(zipFile.toFile())).use { output ->
-                        val zipEntry = ZipEntry("activity.fit")
-                        output.putNextEntry(zipEntry)
-
+                    GZIPOutputStream(FileOutputStream(zipFile.toFile())).use { output ->
                         input.copyTo(output, bufferSize = 4096)
-                        output.closeEntry()
                     }
                 }
                 zipFile

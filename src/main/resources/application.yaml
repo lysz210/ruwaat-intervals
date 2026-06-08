@@ -2,17 +2,16 @@ intervals:
   base-url: https://intervals.icu
   client-id: ${INTERVALS_CLIENT_ID}
 
-capacnan:
-  buckets:
-    credentials: claviger
-    maps-activities: tabula-rogeriana-intervals-activities
-  streams:
-    maps:
-      name: tabula-rogeriana
-
 quarkus:
+  index-dependency:
+    bluepring:
+      group-id: it.lysz210.akasha.capacnan
+      artifact-id: blueprint
   devservices:
     enabled: false
+  config:
+    locations:
+      - "${CAPACNAN_BLUEPRINT_URI:}"
   rest-client:
     intervals-v1:
       url: ${intervals.base-url}
