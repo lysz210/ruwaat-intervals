@@ -6,6 +6,7 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.capacnan.quipus.maps.activityId
 import jakarta.enterprise.context.ApplicationScoped
+import java.net.URI
 import java.time.Instant
 import it.lysz210.akasha.capacnan.quipus.maps.Activity as ActivityQuipu
 import it.lysz210.akasha.capacnan.quipus.maps.activity as activityQuipu
@@ -33,6 +34,9 @@ class ActivitiesQuipucamayoc {
             }
             averageSpeed = activity.averageSpeed ?: 0.0
             maxSpeed = activity.maxSpeed ?: 0.0
+            if (activity.fitFileUri != null) {
+                fitFileUri = activity.fitFileUri.toString()
+            }
         }
 
     fun untieAthlete(quipu: ActivityQuipu): Athlete? =
@@ -53,5 +57,6 @@ class ActivitiesQuipucamayoc {
                 ?.let{ Instant.ofEpochSecond(it.seconds, it.nanos.toLong()) },
             averageSpeed = quipu.averageSpeed,
             maxSpeed = quipu.maxSpeed,
+            fitFileUri = quipu.fitFileUri.takeIf { quipu.hasFitFileUri() }?.let{ URI(it) },
         )
 }

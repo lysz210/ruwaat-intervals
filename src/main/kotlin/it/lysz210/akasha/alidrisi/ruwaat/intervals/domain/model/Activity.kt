@@ -1,5 +1,6 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model
 
+import java.net.URI
 import java.time.Instant
 
 @JvmRecord
@@ -15,6 +16,7 @@ data class Activity(
     val startDate: Instant? = null,
     val averageSpeed: Double? = null,
     val maxSpeed: Double? = null,
+    val fitFileUri: URI? = null,
 ) {
     @JvmInline
     value class ActivityId (val value: String)

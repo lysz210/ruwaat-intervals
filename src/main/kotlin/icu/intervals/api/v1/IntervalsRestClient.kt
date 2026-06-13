@@ -29,5 +29,5 @@ interface IntervalsRestClient {
 
     @GET
     @Path("/activity/{activityId}/file")
-    fun downloadActivityOriginalSource(@PathParam("activityId") activityId: String): Uni<InputStream>
+    fun downloadActivityOriginalSource(@PathParam("activityId") activityId: String): Uni<ByteArray>
 }

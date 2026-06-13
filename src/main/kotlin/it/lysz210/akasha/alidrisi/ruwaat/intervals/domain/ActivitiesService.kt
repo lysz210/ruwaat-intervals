@@ -17,6 +17,15 @@ class ActivitiesService(
 ) {
 
     fun list(): Multi<Activity> = activitiesProvider.listActivities()
+        .onItem().transformToUniAndMerge { activity ->
+            activitiesProvider.getOriginalSource(activity.id)
+                .onItem().transformToUni { fitSource ->
+                    fitFilesStore.put(fitSource)
+                }
+                .map { fitInfo ->
+                    activity.copy(fitFileUri = fitInfo.uri)
+                }
+        }
         .call { activity ->
             activitiesResponsitory.save(activity)
                 .invoke { recordId ->
@@ -26,8 +35,4 @@ class ActivitiesService(
 
     fun activity(activityId: Activity.ActivityId): Uni<Activity> =
         activitiesResponsitory.findById(activityId)
-            .call { _ ->
-                activitiesProvider.getOriginalSource(activityId)
-                    .call { source -> fitFilesStore.put(source) }
-            }
 }

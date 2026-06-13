@@ -16,7 +16,8 @@ class ActivitiesResource(
     private val activitiesService: ActivitiesService
 ) {
     @GET
-    fun list(): Multi<Activity> = activitiesService.list()
+    fun list(): Uni<List<Activity>> =
+        activitiesService.list().collect().asList()
 
     @GET
     @Path("/{activityId}")

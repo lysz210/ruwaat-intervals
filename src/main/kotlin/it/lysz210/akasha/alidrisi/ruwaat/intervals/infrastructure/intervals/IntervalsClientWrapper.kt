@@ -49,9 +49,8 @@ class IntervalsClientWrapper(
 
     override fun getOriginalSource(activityId: Activity.ActivityId): Uni<FitSource> =
         this.intervalsRestClient.downloadActivityOriginalSource(activityId.value)
-            .emitOn(Infrastructure.getDefaultWorkerPool() )
             .map { data -> FitSource(
                 activityId = activityId,
-                data = data.readAllBytes()
+                data = data
             ) }
 }

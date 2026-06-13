@@ -25,7 +25,7 @@ quarkus:
       intervals-v1:
         logging:
           scope: all
-          body-limit: 10240
+          body-limit: 256
     log:
 #      level: DEBUG
       category:
