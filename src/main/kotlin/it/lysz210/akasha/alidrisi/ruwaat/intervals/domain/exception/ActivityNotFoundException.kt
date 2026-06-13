@@ -1,5 +1,6 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.exception
 
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
 
-class ActivityNotFoundException (activityId: String, failure: Throwable? = null):
-    RuntimeException("Active $activityId Not Found!", failure)
+class ActivityNotFoundException (activityId: Activity.ActivityId, failure: Throwable? = null):
+    RuntimeException("Activity $activityId Not Found!", failure)

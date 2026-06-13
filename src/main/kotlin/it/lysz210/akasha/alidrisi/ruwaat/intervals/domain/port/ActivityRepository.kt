@@ -5,6 +5,6 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
 
 interface ActivityRepository {
     fun save(activity: Activity): Uni<Long>
-    fun findById(id: String): Uni<Activity>
-    fun exists(id: String): Boolean
+    fun findById(id: Activity.ActivityId): Uni<Activity>
+    fun exists(id: Activity.ActivityId): Boolean
 }

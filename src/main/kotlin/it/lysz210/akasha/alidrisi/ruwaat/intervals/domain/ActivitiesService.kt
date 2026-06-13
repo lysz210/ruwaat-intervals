@@ -20,11 +20,11 @@ class ActivitiesService(
         .call { activity ->
             activitiesResponsitory.save(activity)
                 .invoke { recordId ->
-                    Log.info("Activity ${activity.id.qualifiedId} with tracking id $recordId")
+                    Log.info("Activity ${activity.id.value} with tracking activityId $recordId")
                 }
         }
 
-    fun activity(activityId: String): Uni<Activity> =
+    fun activity(activityId: Activity.ActivityId): Uni<Activity> =
         activitiesResponsitory.findById(activityId)
             .call { _ ->
                 activitiesProvider.getOriginalSource(activityId)

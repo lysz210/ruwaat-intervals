@@ -3,20 +3,20 @@ package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 import com.google.protobuf.timestamp
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.capacnan.quipus.maps.activityId
-import it.lysz210.akasha.capacnan.quipus.maps.activity as activityQuipu
 import jakarta.enterprise.context.ApplicationScoped
 import java.time.Instant
 import it.lysz210.akasha.capacnan.quipus.maps.Activity as ActivityQuipu
+import it.lysz210.akasha.capacnan.quipus.maps.activity as activityQuipu
 
 @ApplicationScoped
 class ActivitiesQuipucamayoc {
     fun tie(activity: Activity): ActivityQuipu =
         activityQuipu {
             id = activityId {
-                provider = activity.id.provider
-                id = activity.id.id
+                provider = INTERVALS_PROVIDER_NAME
+                id = activity.id.value
             }
             name = activity.name.toString()
             athleteId = activity.athlete?.id.toString()
@@ -37,11 +37,11 @@ class ActivitiesQuipucamayoc {
 
     fun untieAthlete(quipu: ActivityQuipu): Athlete? =
         quipu.athleteId.takeIf { quipu.hasAthleteId() }
-            ?.let { Athlete(id = it) }
+            ?.let { Athlete(id = Athlete.AthleteId(it)) }
 
     fun untie(quipu: ActivityQuipu): Activity =
         Activity (
-            id = quipu.id.let { Key(it.provider, it.id)},
+            id = quipu.id.id.let { Activity.ActivityId(it) },
             athlete = untieAthlete(quipu),
             name = quipu.name.takeIf { quipu.hasName() },
             externalId = quipu.externalId.takeIf { quipu.hasExternalId() },

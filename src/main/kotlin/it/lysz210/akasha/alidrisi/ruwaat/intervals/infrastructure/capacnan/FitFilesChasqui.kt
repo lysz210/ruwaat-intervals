@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
 @ApplicationScoped
-class FitFilesStoreAdapter (
+class FitFilesChasqui (
     private val connection: Connection,
     blueprint: CapacnanBlueprint,
 ) : FitFilesStore {
@@ -34,7 +34,7 @@ class FitFilesStoreAdapter (
                     gzipOutputStream.write(fitSource.data)
                 }
 
-                store.put("${INTERVALS_PROVIDER_NAME}/${fitSource.id.id}.fit.gz", outputStream.toByteArray())
+                store.put("${INTERVALS_PROVIDER_NAME}/${fitSource.activityId.value}.fit.gz", outputStream.toByteArray())
             }
             .invoke { response -> Log.info("Putting ${response.objectName} ${response}") }
             .replaceWithVoid()

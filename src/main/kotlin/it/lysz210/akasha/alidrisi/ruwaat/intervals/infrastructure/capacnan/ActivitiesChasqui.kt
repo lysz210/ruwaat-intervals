@@ -4,7 +4,6 @@ import io.quarkiverse.reactive.messaging.nats.jetstream.client.store.KeyValueSto
 import io.smallrye.mutiny.Uni
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.exception.ActivityNotFoundException
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivityRepository
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
@@ -18,18 +17,22 @@ class ActivitiesChasqui(
     blueprint: CapacnanBlueprint,
 ) : ActivityRepository {
     private val geoBucketName = blueprint.geo().kv().bucket()
+
+    private fun getKeyFor(activityId: Activity.ActivityId) =
+        "${INTERVALS_PROVIDER_NAME}.${activityId.value}"
+
     override fun save(activity: Activity): Uni<Long> {
         val activityQuipu = activityQuipucamayoc.tie(activity)
-        return kvStore.putValue(this.geoBucketName, activity.id.qualifiedId, activityQuipu)
+        return kvStore.putValue(this.geoBucketName, getKeyFor(activity.id), activityQuipu)
     }
 
-    override fun findById(id: String): Uni<Activity> =
-        kvStore.getValue(this.geoBucketName, Key(INTERVALS_PROVIDER_NAME, id).qualifiedId, ActivityQuipu::class.java)
+    override fun findById(id: Activity.ActivityId): Uni<Activity> =
+        kvStore.getValue(this.geoBucketName, getKeyFor(id), ActivityQuipu::class.java)
             .onItem().ifNotNull().transform { activityQuipucamayoc.untie(it) }
             .onItem().ifNull().failWith { ActivityNotFoundException(id) }
             .onFailure().transform { failure -> ActivityNotFoundException(id, failure) }
 
-    override fun exists(id: String): Boolean {
+    override fun exists(id: Activity.ActivityId): Boolean {
         TODO("Not yet implemented")
     }
 }

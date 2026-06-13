@@ -9,9 +9,7 @@ import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.infrastructure.Infrastructure
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSource
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivitiesProvider
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan.ClavigerChasqui
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.rest.client.inject.RestClient
@@ -39,7 +37,7 @@ class IntervalsClientWrapper(
         this.clavigerChasqui.intervalsAthlete.map { it.id }
             .onItem().transformToUni { athleteId ->
                 intervalsRestClient.listActivities(
-                    athleteId,
+                    athleteId.value,
                     ActivitiesRequest(
                         LocalDate.of(2026, 1, 1),
                         this.fields
@@ -49,11 +47,11 @@ class IntervalsClientWrapper(
             .onItem().transformToMulti { Multi.createFrom().iterable(it) }
             .map { intervalsClientMapper.toDoamin(it) }
 
-    override fun getOriginalSource(activityId: String): Uni<FitSource> =
-        this.intervalsRestClient.downloadActivityOriginalSource(activityId)
+    override fun getOriginalSource(activityId: Activity.ActivityId): Uni<FitSource> =
+        this.intervalsRestClient.downloadActivityOriginalSource(activityId.value)
             .emitOn(Infrastructure.getDefaultWorkerPool() )
             .map { data -> FitSource(
-                id = Key(INTERVALS_PROVIDER_NAME, activityId),
+                activityId = activityId,
                 data = data.readAllBytes()
             ) }
 }

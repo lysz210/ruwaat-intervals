@@ -7,5 +7,5 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSource
 
 interface ActivitiesProvider {
     fun listActivities(): Multi<Activity>
-    fun getOriginalSource(activityId: String): Uni<FitSource>
+    fun getOriginalSource(activityId: Activity.ActivityId): Uni<FitSource>
 }

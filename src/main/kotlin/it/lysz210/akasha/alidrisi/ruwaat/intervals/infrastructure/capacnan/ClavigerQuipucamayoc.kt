@@ -1,10 +1,6 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Authorization
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Credential
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Oauth2Flow
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.*
 import it.lysz210.akasha.capacnan.quipus.credentials.CredentialQuipu
 import it.lysz210.akasha.capacnan.quipus.credentials.Quipucamayoc
 import jakarta.enterprise.context.ApplicationScoped
@@ -20,10 +16,7 @@ class ClavigerQuipucamayoc(
         if (data.hasOauth2Flow()) {
             val oauth2Flow = data.oauth2Flow
             return Credential(
-                key = Key(
-                    provider = quipu.userId,
-                    id = data.serviceId,
-                ),
+                clientId = Credential.ClientId(data.serviceId),
                 authentication = Authorization(
                     oauth2Flow = Oauth2Flow(
                         tokenType = oauth2Flow.tokenType,
@@ -37,7 +30,7 @@ class ClavigerQuipucamayoc(
                     )
                 ),
                 athlete = oauth2Flow.takeIf { it.hasIntervalsAthlete() }?.intervalsAthlete?.let {
-                    Athlete(it.id, it.name)
+                    Athlete(Athlete.AthleteId(it.id), it.name)
                 }
             )
         }

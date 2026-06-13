@@ -21,5 +21,5 @@ class ActivitiesResource(
     @GET
     @Path("/{activityId}")
     fun getActivity(@PathParam("activityId") activityId: String): Uni<Activity> =
-        activitiesService.activity(activityId)
+        activitiesService.activity(Activity.ActivityId(activityId))
 }
