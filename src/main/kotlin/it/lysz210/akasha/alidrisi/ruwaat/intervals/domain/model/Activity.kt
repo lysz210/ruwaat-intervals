@@ -4,7 +4,7 @@ import java.time.Instant
 
 @JvmRecord
 data class Activity(
-    val id: String,
+    val id: Key,
     val athlete: Athlete? = null,
     val name: String? = null,
     val externalId: String? = null,

@@ -5,16 +5,17 @@ import icu.intervals.api.v1.IntervalsRestClient
 import icu.intervals.api.v1.dto.ActivitiesRequest
 import icu.intervals.api.v1.dto.ActivitiesResponse
 import io.smallrye.mutiny.Multi
+import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.infrastructure.Infrastructure
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivitiesPort
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSource
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivitiesProvider
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan.ClavigerChasqui
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.rest.client.inject.RestClient
-import java.io.FileOutputStream
-import java.nio.file.Files
 import java.time.LocalDate
-import java.util.zip.GZIPOutputStream
 
 @ApplicationScoped
 class IntervalsClientWrapper(
@@ -22,7 +23,7 @@ class IntervalsClientWrapper(
     @param:RestClient private val intervalsRestClient: IntervalsRestClient,
     private val intervalsClientMapper: IntervalsClientMapper,
     objectMapper: ObjectMapper,
-) : ActivitiesPort {
+) : ActivitiesProvider {
     private val fields: Set<String>
     init {
         val config = objectMapper.serializationConfig
@@ -47,16 +48,21 @@ class IntervalsClientWrapper(
             }
             .onItem().transformToMulti { Multi.createFrom().iterable(it) }
             .map { intervalsClientMapper.toDoamin(it) }
-    fun getActivityOriginalSource(activityId: String) =
+
+    override fun getOriginalSource(activityId: String): Uni<FitSource> =
         this.intervalsRestClient.downloadActivityOriginalSource(activityId)
             .emitOn(Infrastructure.getDefaultWorkerPool() )
-            .map { inputStream ->
-                val zipFile = Files.createTempFile("activity_$activityId", ".zip")
-                inputStream.use { input ->
-                    GZIPOutputStream(FileOutputStream(zipFile.toFile())).use { output ->
-                        input.copyTo(output, bufferSize = 4096)
-                    }
-                }
-                zipFile
-            }
+            .map { data -> FitSource(
+                id = Key(INTERVALS_PROVIDER_NAME, activityId),
+                data = data.readAllBytes()
+            ) }
+//            .map { inputStream ->
+//                val zipFile = Files.createTempFile("activity_$activityId", ".zip")
+//                inputStream.use { input ->
+//                    GZIPOutputStream(FileOutputStream(zipFile.toFile())).use { output ->
+//                        input.copyTo(output, bufferSize = 4096)
+//                    }
+//                }
+//                zipFile
+//            }
 }

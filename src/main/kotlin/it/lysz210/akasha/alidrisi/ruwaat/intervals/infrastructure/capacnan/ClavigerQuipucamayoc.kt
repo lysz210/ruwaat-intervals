@@ -21,7 +21,7 @@ class ClavigerQuipucamayoc(
             val oauth2Flow = data.oauth2Flow
             return Credential(
                 key = Key(
-                    group = quipu.userId,
+                    provider = quipu.userId,
                     id = data.serviceId,
                 ),
                 authentication = Authorization(

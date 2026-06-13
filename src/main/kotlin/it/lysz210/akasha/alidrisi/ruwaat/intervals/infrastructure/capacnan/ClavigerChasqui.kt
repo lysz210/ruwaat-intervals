@@ -6,11 +6,11 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.exception.CredentialNo
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Credential
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Key
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.IntervalsProperties
-import it.lysz210.akasha.capacnan.blueprint.CapacnanBlueprint
 import it.lysz210.akasha.capacnan.quipus.credentials.CredentialQuipu
 import jakarta.enterprise.context.ApplicationScoped
-
 
 @ApplicationScoped
 class ClavigerChasqui(
@@ -19,8 +19,8 @@ class ClavigerChasqui(
     capacnanBlueprint: CapacnanBlueprint,
     properties: IntervalsProperties,
 ) {
-    private val intervalsKey = Key("intervals", properties.clientId())
-    private val intervalsBucket = capacnanBlueprint.security().kv().bucket()
+    private val intervalsKey = Key(INTERVALS_PROVIDER_NAME, properties.clientId())
+    private val intervalsBucket = capacnanBlueprint.credentials().kv().bucket()
 
     val intervals: Uni<Credential>
         get() = kvStore.getValue(intervalsBucket, intervalsKey.qualifiedId, CredentialQuipu::class.java)

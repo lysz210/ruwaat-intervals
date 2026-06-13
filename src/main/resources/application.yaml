@@ -3,15 +3,13 @@ intervals:
   client-id: ${INTERVALS_CLIENT_ID}
 
 quarkus:
-  index-dependency:
-    bluepring:
-      group-id: it.lysz210.akasha.capacnan
-      artifact-id: blueprint
   devservices:
     enabled: false
   config:
     locations:
-      - "${CAPACNAN_BLUEPRINT_URI:}"
+      - "${CAPACNAN_BLUEPRINT_ROOT_URI:}"
+      - "${CAPACNAN_BLUEPRINT_CREDENTIALS_URI:}"
+      - "${CAPACNAN_BLUEPRINT_GEO_URI:}"
   rest-client:
     intervals-v1:
       url: ${intervals.base-url}
