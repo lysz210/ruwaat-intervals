@@ -2,11 +2,16 @@ package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 
 import io.nats.client.Connection
 import io.nats.client.ObjectStore
-import io.nats.client.api.ObjectInfo
+import io.quarkus.logging.Log
 import io.smallrye.mutiny.Uni
+import io.smallrye.mutiny.infrastructure.Infrastructure
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSource
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.FitFilesStore
+import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
 import jakarta.enterprise.context.ApplicationScoped
+import java.io.ByteArrayOutputStream
+import java.util.zip.GZIPOutputStream
 
 @ApplicationScoped
 class FitFilesStoreAdapter (
@@ -20,10 +25,17 @@ class FitFilesStoreAdapter (
             Uni.createFrom().item(it)
         }
 
-    fun put(key: String, value: ByteArray): Uni<ObjectInfo> {
-        return objectStore().onItem()
-            .transform { store ->
-                store.put(key, value)
+    override fun put(fitSource: FitSource): Uni<Void> =
+        objectStore()
+            .emitOn(Infrastructure.getDefaultWorkerPool() )
+            .onItem().transform { store ->
+                val outputStream = ByteArrayOutputStream()
+                GZIPOutputStream(outputStream).use { gzipOutputStream ->
+                    gzipOutputStream.write(fitSource.data)
+                }
+
+                store.put("${INTERVALS_PROVIDER_NAME}/${fitSource.id.id}.fit.gz", outputStream.toByteArray())
             }
-    }
+            .invoke { response -> Log.info("Putting ${response.objectName} ${response}") }
+            .replaceWithVoid()
 }

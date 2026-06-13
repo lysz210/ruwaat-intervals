@@ -56,13 +56,4 @@ class IntervalsClientWrapper(
                 id = Key(INTERVALS_PROVIDER_NAME, activityId),
                 data = data.readAllBytes()
             ) }
-//            .map { inputStream ->
-//                val zipFile = Files.createTempFile("activity_$activityId", ".zip")
-//                inputStream.use { input ->
-//                    GZIPOutputStream(FileOutputStream(zipFile.toFile())).use { output ->
-//                        input.copyTo(output, bufferSize = 4096)
-//                    }
-//                }
-//                zipFile
-//            }
 }
