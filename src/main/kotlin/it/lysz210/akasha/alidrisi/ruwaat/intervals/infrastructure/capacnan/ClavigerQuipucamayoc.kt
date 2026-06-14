@@ -16,7 +16,7 @@ class ClavigerQuipucamayoc(
         if (data.hasOauth2Flow()) {
             val oauth2Flow = data.oauth2Flow
             return Credential(
-                clientId = Credential.ClientId(data.serviceId),
+                clientId = Credential.ClientId(data.clientId),
                 authentication = Authorization(
                     oauth2Flow = Oauth2Flow(
                         tokenType = oauth2Flow.tokenType,
