@@ -1,30 +1,25 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.capacnan
 
-import io.quarkiverse.reactive.messaging.nats.jetstream.client.store.KeyValueStoreAware
 import io.smallrye.mutiny.Uni
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.exception.CredentialNotFoundException
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Athlete
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Credential
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
-import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.IntervalsProperties
-import it.lysz210.akasha.capacnan.quipus.credentials.CredentialQuipu
+import it.lysz210.akasha.capacnan.credentials.CredentialsKeyValue
 import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ClavigerChasqui(
-    private val kvStore: KeyValueStoreAware,
+    private val credentialsKv: CredentialsKeyValue,
     private val clavigerQuipucamayoc: ClavigerQuipucamayoc,
-    capacnanBlueprint: CapacnanBlueprint,
     properties: IntervalsProperties,
 ) {
     private val clientId: Credential.ClientId = Credential.ClientId(properties.clientId())
-    private val intervalsBucket = capacnanBlueprint.credentials().kv().bucket()
 
     val intervals: Uni<Credential>
-        get() = kvStore.getValue(intervalsBucket, "${INTERVALS_PROVIDER_NAME}.${clientId.value}", CredentialQuipu::class.java)
-            .onItem().transform {clavigerQuipucamayoc.untie(it) }
-            .onFailure().transform { failure -> CredentialNotFoundException(this.clientId, failure) }
+        get() = credentialsKv.get("${INTERVALS_PROVIDER_NAME}.${clientId.value}")
+            .map { clavigerQuipucamayoc.untie(it) }
 
     val intervalsAccessToken: Uni<String>
         get() = this.intervals.onItem().transformToUni {

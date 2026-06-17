@@ -14,10 +14,9 @@ quarkus:
     intervals-v1:
       url: ${intervals.base-url}
   messaging:
-    nats:
-      connection:
-        servers:
-          - "nats://localhost:4222"
+nats:
+  connection:
+    url: "nats://localhost:4222"
 
 '%dev':
   quarkus:
@@ -31,3 +30,5 @@ quarkus:
       category:
         "io.quarkus.rest.client.reactive":
           level: DEBUG
+    http:
+      port: 9080

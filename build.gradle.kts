@@ -21,7 +21,7 @@ val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
-val jetstreamVersion: String by project
+val jnatsVersion: String by project
 val quipusMapsVersion: String by project
 val quipusCredentialsVersion: String by project
 val chapacnanBlueprintRootVerion: String by project
@@ -37,7 +37,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-jackson")
 
     implementation("io.quarkus:quarkus-smallrye-health")
-    implementation("io.quarkiverse.reactivemessaging.nats-jetstream:quarkus-messaging-nats-jetstream:${jetstreamVersion}")
+    implementation("io.nats:jnats:${jnatsVersion}")
 
     implementation("it.lysz210.akasha.capacnan:blueprint-root:${chapacnanBlueprintRootVerion}")
     implementation("it.lysz210.akasha.capacnan.quipus:maps:${quipusMapsVersion}")

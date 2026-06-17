@@ -7,6 +7,9 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.Activity
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivitiesProvider
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.ActivityRepository
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.FitFilesStore
+import it.lysz210.akasha.capacnan.geo.ActivityFitsUploadedChannel
+import it.lysz210.akasha.capacnan.quipus.maps.activityFitSource
+import it.lysz210.akasha.capacnan.quipus.maps.activityId
 import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -14,6 +17,7 @@ class ActivitiesService(
     private val activitiesProvider: ActivitiesProvider,
     private val activitiesResponsitory: ActivityRepository,
     private val fitFilesStore: FitFilesStore,
+    private val fitUploadedEmitter: ActivityFitsUploadedChannel,
 ) {
 
     fun list(): Multi<Activity> = activitiesProvider.listActivities()
@@ -35,4 +39,13 @@ class ActivitiesService(
 
     fun activity(activityId: Activity.ActivityId): Uni<Activity> =
         activitiesResponsitory.findById(activityId)
+            .call { activity ->
+                fitUploadedEmitter.send(activityFitSource {
+                    activityId {
+                        id = activity.id.value
+                        provider = "intervals"
+                    }
+                    uri = activity.fitFileUri.toString()
+                })
+            }
 }
