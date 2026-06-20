@@ -12,10 +12,11 @@ interface OutgoingChannel<T: MessageLite> {
     val stream: Uni<JetStream>
     val subject: Subject
 
-    fun send(message: T) =
+    fun send(message: T): Uni<Long> =
         stream.map {
             Log.info("Sending $message")
             val ack = it.publish(subject.value, message.toByteArray())
             Log.info("Published message: $ack")
+            ack.seqno
         }
 }

@@ -10,14 +10,17 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSourceInfo
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.FitFilesStore
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.port.INTERVALS_PROVIDER_NAME
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
+import it.lysz210.akasha.capacnan.geo.ActivityFitsUploadedChannel
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.core.UriBuilder
 import java.io.ByteArrayOutputStream
-import java.net.URI
 import java.util.zip.GZIPOutputStream
 
 @ApplicationScoped
 class FitFilesChasqui (
     private val connection: Connection,
+    private val fitUploadedEmitter: ActivityFitsUploadedChannel,
+    private val fitsQuipucamayoc: FitsQuipucamayoc,
     blueprint: CapacnanBlueprint,
 ) : FitFilesStore {
     private val storeName = blueprint.geo().objectStore().bucket()
@@ -27,25 +30,37 @@ class FitFilesChasqui (
             Uni.createFrom().item(it)
         }
 
-    override fun put(fitSource: FitSource): Uni<FitSourceInfo> =
-        Uni.createFrom().item {
-                val outputStream = ByteArrayOutputStream()
-                GZIPOutputStream(outputStream).use { gzipOutputStream ->
-                    gzipOutputStream.write(fitSource.data)
-                }
-                outputStream.toByteArray()
+    override fun put(fitSource: FitSource): Uni<FitSourceInfo> {
+        val uri = UriBuilder.newInstance()
+            .scheme("nats-object")
+            .host(storeName)
+            .path(INTERVALS_PROVIDER_NAME).path("${fitSource.activityId.value}.fit.gz")
+            .build()
+        return Uni.createFrom().item {
+            val outputStream = ByteArrayOutputStream()
+            GZIPOutputStream(outputStream).use { gzipOutputStream ->
+                gzipOutputStream.write(fitSource.data)
             }
+            outputStream.toByteArray()
+        }
             .onItem().transformToUni { data ->
                 objectStore().onItem().transform { store ->
-                    store.put("${INTERVALS_PROVIDER_NAME}/${fitSource.activityId.value}.fit.gz", data)
+                    store.put(uri.path, data)
                 }
             }
             .runSubscriptionOn(Infrastructure.getDefaultWorkerPool())
             .invoke { response -> Log.info("Putting ${response.objectName} $response") }
-            .map { info ->
+            .map {
                 FitSourceInfo(
                     activitiId = fitSource.activityId,
-                    uri = URI("nats-object", storeName, "/${info.objectName}", null, null)
+                    uri = uri
                 )
             }
+    }
+
+    override fun notify(fitSourceInfo: FitSourceInfo): Uni<Long> =
+        fitUploadedEmitter.send(
+            fitsQuipucamayoc.tie(fitSourceInfo)
+        )
+            .invoke { seq -> Log.info("Event [$seq] => $fitSourceInfo") }
 }

@@ -6,4 +6,5 @@ import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.model.FitSourceInfo
 
 interface FitFilesStore {
     fun put(fitSource: FitSource): Uni<FitSourceInfo>
+    fun notify(fitSourceInfo: FitSourceInfo): Uni<Long>
 }
