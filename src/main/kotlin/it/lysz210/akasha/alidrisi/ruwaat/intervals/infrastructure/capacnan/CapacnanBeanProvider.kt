@@ -5,7 +5,7 @@ import io.nats.client.JetStream
 import io.nats.client.KeyValue
 import io.nats.client.Nats
 import io.smallrye.mutiny.Uni
-import it.lysz210.akasha.capacnan.CapacnaCredentials
+import it.lysz210.akasha.capacnan.CapacnanCredentials
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.infrastructure.config.CapacnanBlueprint
 import it.lysz210.akasha.capacnan.CapacnaGeo
 import it.lysz210.akasha.capacnan.quipus.credentials.EncryptionStrategy
@@ -45,7 +45,7 @@ class CapacnanBeanProvider {
         Uni.createFrom().item { nats.keyValue(blueprint.geo().kv().bucket()) }
     @Produces
     @ApplicationScoped
-    @CapacnaCredentials
+    @CapacnanCredentials
     fun credentialsKeyValue(nats: Connection, blueprint: CapacnanBlueprint): Uni<KeyValue> =
         Uni.createFrom().item { nats.keyValue(blueprint.credentials().kv().bucket()) }
 }
