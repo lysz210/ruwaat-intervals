@@ -35,6 +35,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client-jackson")
     implementation("io.quarkus:quarkus-config-yaml")
     implementation("io.quarkus:quarkus-rest-jackson")
+    implementation("io.quarkus:quarkus-smallrye-fault-tolerance")
 
     implementation("io.quarkus:quarkus-smallrye-health")
     implementation("io.nats:jnats:${jnatsVersion}")

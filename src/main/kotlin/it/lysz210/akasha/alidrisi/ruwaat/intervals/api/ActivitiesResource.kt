@@ -1,5 +1,6 @@
 package it.lysz210.akasha.alidrisi.ruwaat.intervals.api
 
+import io.smallrye.common.annotation.Blocking
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.Uni
 import it.lysz210.akasha.alidrisi.ruwaat.intervals.domain.ActivitiesService
@@ -16,6 +17,7 @@ class ActivitiesResource(
     private val activitiesService: ActivitiesService
 ) {
     @GET
+    @Blocking
     fun list(): Uni<List<Activity>> =
         activitiesService.list().collect().asList()
 
